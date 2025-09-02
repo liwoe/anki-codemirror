@@ -137,7 +137,6 @@ document.addEventListener("DOMContentLoaded", function () {
         autoCloseBrackets: true,
         matchBrackets: true,
         lineWrapping: true,
-        tabSize: 3,
         extraKeys: {
             "Ctrl-Enter": (cm) => submitCode()
         }
