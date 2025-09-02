@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beautiful Code Editor</title>
+    
+    <link rel="stylesheet" href="codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="codemirror/theme/dracula.css">
+    <link rel="stylesheet" href="styles/styles.css">
+    
+    </head>
+<body>
+    <header class="header">
+        <h1 class="title">Codemirror Editor</h1>
+        
+        <div class="controls-container">
+            <div class="language-selector-container">
+                <select id="language-selector" title="Select Language">
+                    <option value="python">Python</option>
+                    <option value="text/x-java">Java</option>
+                    <option value="text/x-c++src">C++</option>
+                    <option value="text/x-csrc">C</option>
+                    <option value="text/x-java">Processing</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="ruby">Ruby</option>
+                    <option value="htmlmixed">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="text/x-kotlin">Kotlin</option>
+                    <option value="sql">SQL</option>
+                </select>
+            </div>
+            
+            <div class="cloze-buttons">
+                <button id="cloze-button" title="Add Cloze Deletion (Ctrl+Shift+C)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                        <path d="M1 2h6v2h-4v14h4v2h-6zm5 14v-2h2v2zm4 0v-2h2v2zm4 0v-2h2v.54c-.625.583-.891.887-1.191 1.46zM21 2v11.082c-.68-.11-1.32-.11-2 0v-9.082h-4v-2zm0 13v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2Z" />
+                    </svg>
+                </button>
+                <button id="cloze-same-button" title="Add Cloze Deletion (Ctrl+Shift+Alt+C)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                        <path d="M2,3H8V5H4V19H8V21H2V3M7,17V15H9V17H7M11,17V15H13V17H11M15,17V15H17V15M22,3V21H16V19H20V5H16V3H22Z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="editor-wrapper">
+        <textarea id="code-editor"></textarea>
+    </div>
+
+    <div class="button-container">
+        <button id="insert-button">Insert Code</button>
+    </div>
+
+    </body>
+</html>

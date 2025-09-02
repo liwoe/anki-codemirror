@@ -1,0 +1,163 @@
+/* Imports the 'Fira Code' font from Google Fonts so it can be used in the editor. */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap');
+
+/* --- THEME COLORS --- */
+/* This is the main place to change the editor's color theme. */
+/* You can find new color codes using an online color picker. */
+:root {
+    --editor-bg: #282a36;      /* The main background color of the editor window */
+    --editor-fg: #f8f8f2;      /* The main text color */
+    --ui-bg: #44475a;          /* Background for buttons and dropdowns */
+    --ui-hover-bg: #6272a4;    /* Color when you hover over a button */
+    --ui-border: #6272a4;      /* Border color for buttons and dropdowns */
+    --gutter-fg: #6272a4;      /* Color of the line numbers */
+    --accent-color: #bd93f9;   /* The color of the main 'Insert' button */
+}
+
+/* --- GENERAL PAGE STYLE --- */
+/* These styles apply to the entire editor window. */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: var(--editor-bg);
+    color: var(--editor-fg);
+    /* --- FONT FAMILY --- */
+    /* This sets the font for the UI (buttons, dropdowns, etc.) */
+    font-family: 'Fira Code', monospace;
+}
+
+/* --- HEADER --- */
+/* This styles the top bar of the editor. */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--ui-bg);
+    background-color: var(--editor-bg);
+}
+
+.header .title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* --- CONTROLS (Dropdowns) --- */
+/* This styles the dropdown menus for language and theme selection. */
+.controls-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.controls-container select {
+    background-color: var(--ui-bg);
+    color: var(--editor-fg);
+    border: 1px solid var(--ui-border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.controls-container select:hover {
+    background-color: var(--ui-hover-bg);
+}
+
+.controls-container select:focus {
+    outline: none;
+    border-color: var(--ui-hover-bg);
+}
+
+/* --- CLOZE BUTTONS --- */
+/* This styles the buttons for adding cloze deletions (e.g., C1, C2). */
+.cloze-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cloze-buttons button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border: 1px solid var(--ui-border);
+    border-radius: 6px;
+    background-color: var(--ui-bg);
+    color: var(--editor-fg);
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s, transform 0.1s;
+    position: relative;
+}
+
+.cloze-buttons button:hover {
+    background-color: var(--ui-hover-bg);
+    transform: translateY(-1px); /* subtle hover lift */
+}
+
+.cloze-buttons button:active {
+    transform: translateY(0); /* reset on click */
+}
+
+.cloze-buttons button svg {
+    pointer-events: none; /* ensures only the button triggers hover */
+    width: 18px;
+    height: 18px;
+}
+
+/* --- MAIN EDITOR --- */
+/* This section styles the main text area where you write your code. This is where you want to most likely do some changes. */
+.editor-wrapper {
+    height: calc(100% - 100px);
+    width: 100%;
+}
+
+.CodeMirror {
+    /* --- EDITOR FONT --- */
+    /* This sets the font inside the text editor. */
+    font-family: 'Fira Code', monospace;
+
+    /* --- EDITOR FONT SIZE --- */
+    /* Change the size of the code text. */
+    /* Increase for bigger text, decrease for smaller. (Most important setting for you I guess) */
+    font-size: 15px;
+    height: 100%;
+}
+
+/* --- INSERT BUTTON --- */
+/* This styles the main button at the bottom right. */
+.button-container {
+    position: absolute;
+    bottom: 15px;
+    right: 20px;
+    z-index: 100;
+}
+
+#insert-button {
+    background-color: var(--accent-color);
+    color: var(--editor-bg);
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: filter 0.2s, transform 0.1s;
+}
+
+#insert-button:hover {
+    filter: brightness(1.2);
+    transform: translateY(-1px);
+}
+
+#insert-button:active {
+    transform: translateY(0);
+}

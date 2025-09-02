@@ -1,0 +1,37 @@
+/* This section styles the code in the **REVIEWER**.
+You can change the font, size, and spacing here.
+This file gets synced to anki web so you can see the code instance also on mobile.
+*/
+
+.CodeMirror {
+    height: auto;
+    border-radius: 6px;
+    
+    /* --- FONT FAMILY --- */
+    /* Change the font used in the code editor. */
+    /* You can use any font installed on your system. */
+    /* Examples: 'Consolas', 'Courier New', 'Lucida Console' */
+    font-family: 'Fira Code', monospace;
+
+    /* --- FONT SIZE --- */
+    /* Change the size of the text. */
+    font-size: 18px;
+
+    /* --- PADDING --- */
+    padding: 4px 8px;
+
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* This section controls how the code editor box is positioned 
+on the review screen. It's best not to change this unless 
+you know what you are doing.
+*/
+.codemirror-anki {
+    display: inline-block;
+    margin: 0.5em 0;
+    text-align: left;
+    overflow: hidden;
+    vertical-align: middle;
+}
