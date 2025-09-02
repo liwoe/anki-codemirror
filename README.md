@@ -3,8 +3,6 @@
   <p>A powerful, integrated code editor for Anki that brings beautiful syntax highlighting and a rich editing experience directly into your flashcards.</p>
 </div>
 
-<hr>
-
 <h2>📜 Overview</h2>
 <p>This add-on replaces the default text areas for code with a full-featured CodeMirror instance. It's designed for students, developers, and anyone who wants to create flashcards with clean, readable, and beautifully formatted code snippets.</p>
 
