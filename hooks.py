@@ -40,8 +40,8 @@ def add_editor_button(buttons: list, editor: Editor):
         icon=str(icon_path),
         cmd="insertLiveCodeBlock",
         func=lambda e=editor: on_insert_code_button_clicked(e),
-        tip="Open CodeMirror Editor (Ctrl+Alt+C)",
-        keys="Ctrl+Alt+C",
+        tip="Open CodeMirror Editor (Ctrl+Alt+F)",
+        keys="Ctrl+F",
     )
     buttons.append(btn)
     return buttons

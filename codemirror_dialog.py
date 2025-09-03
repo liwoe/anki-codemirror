@@ -15,6 +15,7 @@ from aqt.qt import QDialog, QVBoxLayout
 
 from . import config
 from . import utils
+from . import starter_code  # NEW: Import the starter code snippets
 
 class CodeMirrorWebView(AnkiWebView):
     """
@@ -129,9 +130,10 @@ class CodeMirrorDialog(QDialog):
             window.CM_CONFIG = {{
                 buttonText: {json.dumps(button_text)},
                 language: {json.dumps(last_lang)},
-                activeTheme: {json.dumps(self.active_theme)}
+                activeTheme: {json.dumps(self.active_theme)},
+                starterCode: {json.dumps(starter_code.STARTER_CODE)}
             }};
-        </script>"""
+        </script>""" # MODIFIED: Added starterCode to the config object
 
         # Finally, load the prepared HTML, CSS, and JS into the webview.
         self.web.stdHtml(body=body_content, css=css_files, js=js_files, context=self, head=init_script)
