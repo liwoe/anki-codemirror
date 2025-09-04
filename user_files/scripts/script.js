@@ -1,43 +1,48 @@
-// This script creates the codemirror editor where you can type.
+// This script initializes the CodeMirror editor inside the Anki dialog,
+// sets up its configuration, and handles communication back to the main Anki window.
 
-document.addEventListener("DOMContentLoaded", function () {
-    
-    // =================================================================
-    // SECTION 1: Get references to all HTML elements
-    // =================================================================
-    const insertButton = document.getElementById("insert-button");
-    const clozeButton = document.getElementById("cloze-button");
-    const clozeSameButton = document.getElementById("cloze-same-button");
-    const langSelector = document.getElementById("language-selector");
-    const starterCodeButton = document.getElementById("starter-code-button");
-
-    // =================================================================
-    // SECTION 2: Load configuration passed from Python
-    // =================================================================
+document.addEventListener("DOMContentLoaded", () => {
+    // --- CONFIGURATION ---
     const config = window.CM_CONFIG || {};
+    const buttonText = config.buttonText || "Insert Code";
     const initialLanguage = config.language || "python";
     const activeTheme = config.activeTheme || "dracula";
     const starterCode = config.starterCode || {};
 
-    if (config.buttonText) {
-        insertButton.textContent = config.buttonText;
+    // --- ELEMENT SETUP ---
+    const insertButton = document.getElementById("insert-button");
+    const langSelect = document.getElementById("language-select");
+    const clozeButton = document.getElementById("cloze-button");
+    const clozeSameButton = document.getElementById("cloze-same-button");
+    const starterCodeButton = document.getElementById("starter-code-button");
+
+    if (insertButton) {
+        insertButton.textContent = buttonText;
+    }
+    if (langSelect) {
+        langSelect.value = initialLanguage;
     }
     
-    // Set the language dropdown to its last used value
-    langSelector.value = initialLanguage;
-
     // =================================================================
-    // SECTION 3: Define all helper functions
+    // SECTION: Helper Functions
     // =================================================================
 
+    /**
+     * Checks if a given RGB color is light or dark.
+     * @param {string} color - The RGB color string (e.g., "rgb(40, 42, 54)").
+     * @returns {boolean} - True if the color is light, false otherwise.
+     */
     function isColorLight(color) {
         if (!color) return false;
         const [r, g, b] = color.match(/\d+/g).map(Number);
-        // Using the luminance formula
         const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
         return luminance > 128;
     }
 
+    /**
+     * Reads the computed styles from the CodeMirror theme and applies them
+     * to the surrounding UI elements for a cohesive look.
+     */
     function syncUiToTheme() {
         setTimeout(() => {
             const cmElement = document.querySelector('.CodeMirror');
@@ -51,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const uiBgColor = activeLine ? window.getComputedStyle(activeLine).backgroundColor : bgColor;
             const gutterText = document.querySelector('.CodeMirror-linenumber');
             const gutterFgColor = gutterText ? window.getComputedStyle(gutterText).color : fgColor;
-            
             const accentElement = document.querySelector('.CodeMirror-matchingbracket');
             const accentColor = accentElement ? window.getComputedStyle(accentElement).color : gutterFgColor;
             
@@ -63,28 +67,27 @@ document.addEventListener("DOMContentLoaded", function () {
             bodyStyles.setProperty('--gutter-fg', gutterFgColor);
             bodyStyles.setProperty('--accent-color', accentColor);
             
-            if (insertButton) {
-                if (isColorLight(accentColor)) {
-                    insertButton.style.color = "#333333";
-                } else {
-                    insertButton.style.color = "#ff9800";
-                }
+            if (insertButton && isColorLight(accentColor)) {
+                insertButton.style.color = "#333333";
             }
         }, 50);
     }
 
+    /**
+     * Wraps the selected text with Anki's cloze syntax.
+     * @param {boolean} increment - If true, creates a new cloze number (c2, c3...). 
+     * If false, uses the last-used cloze number.
+     */
     function addCloze(increment) {
         const editor = window.editor;
         if (!editor) return;
-        const fullText = editor.getValue();
         let maxCloze = 0;
         const clozeRegex = /{{\s*c(\d+)::/g;
         let match;
-        while ((match = clozeRegex.exec(fullText)) !== null) {
-            const num = parseInt(match[1], 10);
-            if (num > maxCloze) { maxCloze = num; }
+        while ((match = clozeRegex.exec(editor.getValue())) !== null) {
+            maxCloze = Math.max(maxCloze, parseInt(match[1], 10));
         }
-        let clozeNum = increment ? maxCloze + 1 : (maxCloze === 0 ? 1 : maxCloze);
+        const clozeNum = increment ? maxCloze + 1 : (maxCloze || 1);
         const selectedText = editor.getSelection();
         const clozeString = `{{c${clozeNum}::${selectedText || ''}}}`;
         editor.replaceSelection(clozeString);
@@ -94,33 +97,43 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         editor.focus();
     }
-
+    
+    /** Inserts pre-defined starter code for the current language into the editor. */
     function insertStarterCode() {
         const editor = window.editor;
         if (!editor) return;
-
         const currentLanguage = editor.getOption("mode");
         const snippet = starterCode[currentLanguage];
-
         if (snippet) {
             editor.setValue(snippet);
         }
         editor.focus();
     }
 
+    /**
+     * Encodes the editor's content and sends it back to Python.
+     */
     function submitCode() {
         const codeElement = document.querySelector(".CodeMirror-code");
-        if (!codeElement) { return; }
+        if (!codeElement) {
+            console.error("Could not find the '.CodeMirror-code' element to get highlighted HTML.");
+            return;
+        }
 
-        const currentLanguage = window.editor.getOption("mode");
-        const rawCode = editor.getValue();
+        const rawCode = window.editor.getValue();
         const highlightedHtml = codeElement.innerHTML;
-        const encodedRawCode = btoa(unescape(encodeURIComponent(rawCode)));
+        
+        const encodedRaw = btoa(unescape(encodeURIComponent(rawCode)));
         const encodedHtml = btoa(unescape(encodeURIComponent(highlightedHtml)));
-
-        sendToPython(`insert_code:${currentLanguage}:${encodedRawCode}:${encodedHtml}`);
+        const currentLang = window.editor.getOption("mode");
+        
+        sendToPython(`insert_code:${currentLang}:${encodedRaw}:${encodedHtml}`);
     }
 
+    /**
+     * Robustly sends a command to Anki's Python backend.
+     * @param {string} command - The command string to send.
+     */
     function sendToPython(command) {
         if (window.pybridge && window.pybridge.send) {
             pybridge.send(command);
@@ -131,57 +144,78 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    /**
+     * Injects CSS into the document head to style the Vim command bar.
+     */
+    function injectVimDialogStyles() {
+        const styleId = 'cm-vim-dialog-styles';
+        if (document.getElementById(styleId)) return;
+
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.innerHTML = `
+            .CodeMirror-dialog {
+                background-color: var(--ui-bg, #282a36);
+                color: var(--editor-fg, #f8f8f2);
+                border-top: 1px solid var(--ui-border, #6272a4);
+                padding: 0.4em 0.8em;
+            }
+
+            .CodeMirror-dialog input {
+                border: none;
+                outline: none;
+                background: transparent;
+                width: 20em;
+                color: inherit;
+                font-family: monospace;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
     // =================================================================
-    // SECTION 4: Initialize the editor and set up all event listeners
+    // SECTION: Editor Initialization and Event Listeners
     // =================================================================
 
-    window.editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
+    const editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
         lineNumbers: true,
         mode: initialLanguage,
         theme: activeTheme,
+        keyMap: "vim",
         autoCloseBrackets: true,
         matchBrackets: true,
         lineWrapping: true,
+        styleActiveLine: true,
         extraKeys: {
             "Ctrl-Enter": (cm) => submitCode(),
             "Ctrl-B": () => insertStarterCode()
         }
     });
+    window.editor = editor;
 
-    editor.focus();
-    syncUiToTheme();
-
-    langSelector.addEventListener("change", function () {
-        const newLang = this.value;
-        window.editor.setOption("mode", newLang);
-        sendToPython(`set_lang:${newLang}`);
-        window.editor.focus();
+    editor.on('keydown', function(cm, event) {
+        if (event.key === 'Escape') {
+            event.stopPropagation();
+        }
     });
 
+    // --- Attach Event Listeners ---
+    if (insertButton) insertButton.addEventListener("click", submitCode);
+    if (clozeButton) clozeButton.addEventListener("click", () => addCloze(true));
+    if (clozeSameButton) clozeSameButton.addEventListener("click", () => addCloze(false));
+    if (starterCodeButton) starterCodeButton.addEventListener("click", insertStarterCode);
     
-    // Listen for clicks on the buttons
-    insertButton.addEventListener("click", submitCode);
-    clozeButton.addEventListener("click", () => addCloze(true));
-    clozeSameButton.addEventListener("click", () => addCloze(false));
-    starterCodeButton.addEventListener("click", insertStarterCode);
+    if (langSelect) {
+        langSelect.addEventListener("change", (e) => {
+            const newLang = e.target.value;
+            editor.setOption("mode", newLang);
+            sendToPython(`set_lang:${newLang}`);
+            editor.focus();
+        });
+    }
 
-    // Listen for keyboard shortcuts
     document.addEventListener('keydown', (event) => {
-        // Shortcut to focus and open the language selector
-        if (event.ctrlKey && !event.shiftKey && !event.altKey && event.key.toLowerCase() === 'l') {
-            event.preventDefault();
-            // Modern approach to programmatically open the select dropdown
-            if (typeof langSelector.showPicker === 'function') {
-                langSelector.showPicker();
-            } else {
-                // Fallback for older browsers: focus and let the user open with space/arrows.
-                // Programmatically dispatching a click event is unreliable across browsers.
-                langSelector.focus();
-            }
-            return; // Stop further processing for this shortcut
-        }
-
-        if (window.editor && window.editor.hasFocus()) {
+        if (editor.hasFocus()) {
             if (event.ctrlKey && event.shiftKey && !event.altKey && event.key.toLowerCase() === 'c') {
                 event.preventDefault();
                 addCloze(true);
@@ -193,14 +227,18 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    let resizeTimer;
-    window.addEventListener("resize", () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            if (window.editor) {
-                window.editor.refresh();
-            }
-        }, 150);
-    });
+    // --- Final Setup ---
+    setTimeout(() => {
+        editor.focus();
+        editor.refresh();
+        // Programmatically enter Insert Mode after the editor is ready.
+        // This ensures the user can start typing immediately.
+        if (editor.state.vim && editor.state.vim.insertMode === false) {
+            CodeMirror.Vim.handleKey(editor, 'i');
+        }
+    }, 100);
+    
+    syncUiToTheme();
+    injectVimDialogStyles();
 });
 

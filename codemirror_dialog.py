@@ -94,13 +94,14 @@ class CodeMirrorDialog(QDialog):
         # Define all CSS and JS files needed for the editor dialog itself.
         css_files = [
             "codemirror/lib/codemirror.css",
+            "codemirror/addon/dialog/dialog.css",
             f"codemirror/theme/{self.active_theme}.css",
             "styles/styles.css"
         ]
         
         js_files = [
             "codemirror/lib/codemirror.js", "codemirror/addon/edit/closebrackets.js",
-            "codemirror/addon/edit/matchbrackets.js", "codemirror/mode/clike/clike.js",
+            "codemirror/addon/edit/matchbrackets.js", "codemirror/keymap/vim.js", "codemirror/addon/dialog/dialog.js", "codemirror/mode/clike/clike.js",
             "codemirror/mode/python/python.js", "codemirror/mode/javascript/javascript.js",
             "codemirror/mode/ruby/ruby.js", "codemirror/mode/sql/sql.js", "codemirror/mode/css/css.js",
             "codemirror/mode/xml/xml.js", "codemirror/mode/htmlmixed/htmlmixed.js", "scripts/script.js"
