@@ -59,4 +59,4 @@
 
 <h2>❤️ Contributing & Credits</h2>
 <p>This add-on is built upon the fantastic <a href="https://codemirror.net/">CodeMirror</a> library.</p>
-<p>Contributions are welcome! Please see the <a href="CONTRIBUTORS.md">CONTRIBUTORS.md</a> file for more information on how to contribute to the project.</p>
+<p>Contributions are welcome!</p><p>Just fork this project and when done create a pull request :) <br> Also: please add yourself to the <a href="CONTRIBUTORS.md">CONTRIBUTORS.md</a> file if you do so ^^.</p>
