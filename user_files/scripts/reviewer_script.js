@@ -28,7 +28,7 @@
             span.parentNode.replaceChild(container, span);
 
             // Now, initialize a full CodeMirror instance on the container.
-            CodeMirror(container, {
+            const cmInstance = CodeMirror(container, {
                 value: code,              // The code to display
                 mode: language,           // The language for syntax highlighting
                 theme: globalTheme,       // The theme from your addon's config
@@ -36,6 +36,9 @@
                 readOnly: 'nocursor',     // Makes it non-editable and hides the blinking cursor
                 lineWrapping: true,       // Optional: wrap long lines
             });
+
+            requestAnimationFrame(() => cmInstance.refresh());
+            setTimeout(() => cmInstance.refresh(), 300);
         });
     }
 

@@ -5,3 +5,4 @@ If you've contributed and would like to be added to this list, please open a pul
 
 Development Team
 Bernhard (liwoe) - Main development and initial idea.
+Linus - Fixed CodeMirror asset injection and mobile (iOS) rendering issues.
